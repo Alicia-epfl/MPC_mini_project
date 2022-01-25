@@ -3,6 +3,7 @@
 % Alicia Mauroux | sciper: 274618            %
 % ME-425: Model predictive control | part 6  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+addpath(fullfile('..', 'src'));
 
 Ts = 1/10; % Note that we choose a larger Ts here to speed up the simulation
 rocket = Rocket(Ts);
