@@ -52,31 +52,6 @@ classdef MPC_Control_x < MPC_Control
                 end
             end
             [Ff,ff]=double(Xf);
-            figure('Name','Terminal invariant set for sys_x')
-            subplot(2,3,1)
-            plot(Xf.projection(1:2),'g')
-            xlabel('wy (rad/s)');
-            ylabel('Beta (rad)');
-            subplot(2,3,2)
-            plot(Xf.projection(2:3),'g')
-            xlabel('Beta (rad)');
-            ylabel('vx (m/s)');
-            subplot(2,3,3)
-            plot(Xf.projection(3:4),'g')            
-            xlabel('vx (m/s)');
-            ylabel('x (m)');
-            subplot(2,3,4)
-            plot(Xf.projection([1,3]),'g')
-            xlabel('wy (rad/s)');
-            ylabel('vx (m/s)');
-            subplot(2,3,5)
-            plot(Xf.projection([1,4]),'g')
-            xlabel('wy (rad/s)');
-            ylabel('x (m)');
-            subplot(2,3,6)
-            plot(Xf.projection([2,4]),'g')
-            xlabel('Beta (rad)');
-            ylabel('x (m)');
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
@@ -86,14 +61,14 @@ classdef MPC_Control_x < MPC_Control
             obj = 0;
             
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (M*U(:,1) <= m) + (F*X(:,1) <= f);
-            obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
+            obj = (X(:,1)-x_ref)'*Q*(X(:,1)-x_ref) + (U(:,1)-u_ref)'*R*(U(:,1)-u_ref);
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f) + (M*U(:,i) <= m);
-                obj = obj + X(:,i)'*Q*X(:,i) + U(:,i)'*R*U(:,i);
+                obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
             con = con + (Ff*X(:,N) <= ff);
-            obj = obj + X(:,N)'*Qf*X(:,N);
+            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,8 +101,12 @@ classdef MPC_Control_x < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            obj = 0;
-            con = [xs == 0, us == 0];
+            
+            Rs = 1;
+            
+            con = [mpc.A*xs + mpc.B*us == xs; mpc.C*xs == ref;
+                     -deg2rad(15) <= us <= deg2rad(15); -deg2rad(5)<=xs(2)<=deg2rad(5)];
+            obj = us*Rs*us;
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -8,14 +8,14 @@ rocket = Rocket(Ts);
 sys = rocket.linearize(xs, us) % Linearize the nonlinear model about trim point
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys, xs, us)
 
-% Design MPC controller
-H = 3; % Horizon length in seconds
+%% Design MPC controller
+H = 5; % Horizon length in seconds
 mpc_x = MPC_Control_x(sys_x, Ts, H);
 mpc_y = MPC_Control_y(sys_y, Ts, H);
 mpc_z = MPC_Control_z(sys_z, Ts, H);
 mpc_roll = MPC_Control_roll(sys_roll, Ts, H);
 
-%Simulations
+%% Simulations
 Tf=10.0;
 [T, X_sub, U_sub] = rocket.simulate(sys_x, [0,0,0,5], Tf, @mpc_x.get_u, 0);
 ph_x=rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us, 0);

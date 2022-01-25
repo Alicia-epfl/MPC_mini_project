@@ -53,25 +53,22 @@ classdef MPC_Control_z < MPC_Control
             M = [1;-1]; m = [23.3333; 6.6667];
             
             % Terminal set
-            Xf = Polyhedron(M*K,m);
-            figure()
-            plot(Xf,'alpha',0.1,'color','r')
-            hold on
+            Xf = polytope(M*K,m);
             
             while 1
                 prevXf = Xf;
-                F = Xf.A;
-                f = Xf.b;
-                preXf = Polyhedron(F*Acl,f);
+                [F,f] = double(Xf);
+                preXf = polytope(F*Acl,f);
                 Xf = intersect(Xf,preXf);
-                plot(Xf,'alpha',0.1,'color','r')
-                if prevXf==Xf
+                if isequal(prevXf,Xf)
                     break
                 end
             end
-            hold off
-            Ff = Xf.A;
-            ff = Xf.b;
+            [Ff,ff]=double(Xf);
+            figure('Name','Terminal invariant set for sys_roll')
+            plot(Xf,'g');
+            xlabel('vz (m/s)');
+            ylabel('z (m)');
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
@@ -81,7 +78,7 @@ classdef MPC_Control_z < MPC_Control
             obj = 0;
             
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (M*U(:,1) <= m);
-            obj = U(:,1)'*R*U(:,1);
+            obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (M*U(:,i) <= m);

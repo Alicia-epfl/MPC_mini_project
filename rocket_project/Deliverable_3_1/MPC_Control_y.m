@@ -52,19 +52,31 @@ classdef MPC_Control_y < MPC_Control
                 end
             end
             [Ff,ff]=double(Xf);
-            figure()
+            figure('Name','Terminal invariant set for sys_y')
             subplot(2,3,1)
             plot(Xf.projection(1:2),'g')
+            xlabel('wx (rad/s)');
+            ylabel('Alpha (rad)');
             subplot(2,3,2)
             plot(Xf.projection(2:3),'g')
+            xlabel('Alpha (rad)');
+            ylabel('vy (m/s)');
             subplot(2,3,3)
-            plot(Xf.projection(3:4),'g')
+            plot(Xf.projection(3:4),'g')            
+            xlabel('vy (m/s)');
+            ylabel('y (m)');
             subplot(2,3,4)
             plot(Xf.projection([1,3]),'g')
+            xlabel('wx (rad/s)');
+            ylabel('vy (m/s)');
             subplot(2,3,5)
             plot(Xf.projection([1,4]),'g')
+            xlabel('wx (rad/s)');
+            ylabel('y (m)');
             subplot(2,3,6)
             plot(Xf.projection([2,4]),'g')
+            xlabel('Alpha (rad)');
+            ylabel('y (m)');
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
             
