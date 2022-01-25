@@ -18,6 +18,34 @@ ref_sym = opti.parameter(4, 1);   % target position
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
 
+% Runge-Kutta 4 integration
+k1 = rocket.f(X_sym,        U_sym);
+k2 = rocket.f(X_sym+h/2*k1, U_sym);
+k3 = rocket.f(X_sym+h/2*k2, U_sym);
+k4 = rocket.f(X_sym+h*k3,   U_sym);
+opti.subject_to(X_sym(:,k+1) == X_sym + h/6*(k1+2*k2+2*k3+k4));
+
+% SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
+            
+R = 0.5*eye(nu);
+Q = 10*eye(nx);
+
+% ---- objective ---------
+opti.minimize(...
+    sum(X_sym(2,:)'*Q*X_sym(2,:))  + ... % min x'Qx
+  U_sym(1,:)'*R*U_sym(1,:) );             % min u'Ru
+  
+
+% ---- constraints -----------
+M = [1;-1]; m = [deg2rad(15); deg2rad(15)];
+F = [0 1 0 0; 0 -1 0 0]; f = [deg2rad(85); deg2rad(85)];
+
+opti.subject_to(20 <= U(4) <= 90);  % Pdiff is limited
+opti.subject_to(50 <= U(3) <= 90);  % Pavg is limited
+
+
+opti.subject_to(M*U_sym <= m);   % deta contraint not sure
+opti.subject_to(F*X_sym <= f);   % beta contraint
 
 
 % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
