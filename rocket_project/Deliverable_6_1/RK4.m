@@ -7,7 +7,7 @@ function [x_next] = RK4(X,U,H,rocket)
 % Returns
 %    State h seconds in the future
 %
-display('RK4')
+%display('RK4')
 %
 %
 % Runge-Kutta 4 integration

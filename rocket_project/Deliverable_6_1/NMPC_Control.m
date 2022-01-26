@@ -13,9 +13,9 @@ nu = 4;  % Number of inputs
 % Decision variables (symbolic)
 X_sym = opti.variable(nx, N); % state trajectory
 U_sym = opti.variable(nu, N-1);   % control trajectory)
-display(X_sym);
-display(U_sym);
 
+display(U_sym);
+display(X_sym);
 % Parameters (symbolic)
 x0_sym  = opti.parameter(nx, 1);  % initial state
 ref_sym = opti.parameter(4, 1);   % target position
@@ -26,7 +26,7 @@ ref_sym = opti.parameter(4, 1);   % target position
 % Runge-Kutta 4 integration
 f_discrete = @(x,u) RK4(x,u,H,rocket);
 Xs = [0;0;0;0;0;ref_sym(4);0;0;0;ref_sym(1);ref_sym(2);ref_sym(3)];
-
+display(Xs);
 
 alpha = X_sym(4,:);
 beta = X_sym(5,:);
@@ -44,15 +44,17 @@ Q = eye(nx);
 obj = 0;
 opti.subject_to(X_sym(:,1)==x0_sym);
 
+display('RK4')
 for k=1:N-1 % loop over control intervals
     opti.subject_to(X_sym(:,k+1) == f_discrete(X_sym(:,k), U_sym(:,k)));
     obj = obj + (X_sym(:,k)-Xs)'*Q*(X_sym(:,k)-Xs) + U_sym(:,k)'*R*U_sym(:,k); 
 end
 
 opti.subject_to(-0.087 <= alpha <= 0.087); % alpha 
-opti.subject_to(-0.087 <=beta <= .087); % beta
+opti.subject_to(-1.48 <=beta <= 1.48); % beta
 
 display(U_sym);
+display(X_sym);
 
 opti.subject_to( -0.26 <= delta1 <= 0.26);
 opti.subject_to(-0.26 <= delta2 <= 0.26);
