@@ -28,9 +28,10 @@ classdef MPC_Control_y < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 50*eye(nu);
+            R = 20*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2)= 100;
+            Q(2,2)= 10;
+            Q(4,4)= 0.5;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;

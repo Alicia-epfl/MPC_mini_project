@@ -33,8 +33,9 @@ classdef MPC_Control_roll < MPC_Control
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
             
-            R = 0.5*eye(nu);
-            Q = 10*eye(nx);
+            R = 0.1*eye(nu);
+            Q = 1*eye(nx);
+            Q(2,2) = 20;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;

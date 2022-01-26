@@ -42,8 +42,9 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 0.5*eye(nu);
-            Q = 4*eye(nx);
+            R = 0.1*eye(nu);
+            Q = 1*eye(nx);
+            Q(2,2) = 20;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
@@ -65,7 +66,7 @@ classdef MPC_Control_z < MPC_Control
                 end
             end
             [Ff,ff]=double(Xf);
-            figure('Name','Terminal invariant set for sys_roll')
+            figure('Name','Terminal invariant set for sys_z')
             plot(Xf,'g');
             xlabel('vz (m/s)');
             ylabel('z (m)');
