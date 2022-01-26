@@ -11,17 +11,17 @@ sys = rocket.linearize(xs, us) % Linearize the nonlinear model about trim point
 %% Design MPC controller
 H = 5; % Horizon length in seconds
 mpc_x = MPC_Control_x(sys_x, Ts, H);
-mpc_y = MPC_Control_y(sys_y, Ts, H);
-mpc_z = MPC_Control_z(sys_z, Ts, H);
-mpc_roll = MPC_Control_roll(sys_roll, Ts, H);
+% mpc_y = MPC_Control_y(sys_y, Ts, H);
+% mpc_z = MPC_Control_z(sys_z, Ts, H);
+% mpc_roll = MPC_Control_roll(sys_roll, Ts, H);
 
 %% Simulations
 Tf=10.0;
 [T, X_sub, U_sub] = rocket.simulate(sys_x, [0,0,0,5], Tf, @mpc_x.get_u, 0);
 ph_x=rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us, 0);
-[T, X_sub, U_sub] = rocket.simulate(sys_y, [0,0,0,5], Tf, @mpc_y.get_u, 0);
-ph_y=rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us, 0);
-[T, X_sub, U_sub] = rocket.simulate(sys_z, [0,5], Tf, @mpc_z.get_u, 0);
-ph_z=rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, 0);
-[T, X_sub, U_sub] = rocket.simulate(sys_roll, [0,deg2rad(45)], Tf, @mpc_roll.get_u, 0);
-ph_roll=rocket.plotvis_sub(T, X_sub, U_sub, sys_roll, xs, us, 0);
+% [T, X_sub, U_sub] = rocket.simulate(sys_y, [0,0,0,5], Tf, @mpc_y.get_u, 0);
+% ph_y=rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us, 0);
+% [T, X_sub, U_sub] = rocket.simulate(sys_z, [0,5], Tf, @mpc_z.get_u, 0);
+% ph_z=rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, 0);
+% [T, X_sub, U_sub] = rocket.simulate(sys_roll, [0,deg2rad(45)], Tf, @mpc_roll.get_u, 0);
+% ph_roll=rocket.plotvis_sub(T, X_sub, U_sub, sys_roll, xs, us, 0);

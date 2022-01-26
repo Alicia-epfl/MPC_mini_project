@@ -30,6 +30,7 @@ classdef MPC_Control_x < MPC_Control
             
             R = 50*eye(nu);
             Q = 1*eye(nx);
+            Q(2,2)= 100;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
