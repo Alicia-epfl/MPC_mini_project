@@ -4,12 +4,17 @@ import casadi.*
 opti = casadi.Opti(); % Optimization problem
 
 N = ceil(H/rocket.Ts); % MPC horizon
+display(N)
+display(H)
+display(rocket.Ts)
 nx = 12; % Number of states
 nu = 4;  % Number of inputs
 
 % Decision variables (symbolic)
 X_sym = opti.variable(nx, N); % state trajectory
 U_sym = opti.variable(nu, N-1);   % control trajectory)
+display(X_sym);
+display(U_sym);
 
 % Parameters (symbolic)
 x0_sym  = opti.parameter(nx, 1);  % initial state
@@ -19,26 +24,41 @@ ref_sym = opti.parameter(4, 1);   % target position
 % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
 
 % Runge-Kutta 4 integration
-f_discrete = @(x,u) RK4(x,u,H,rocket.f);
+f_discrete = @(x,u) RK4(x,u,H,rocket);
 Xs = [0;0;0;0;0;ref_sym(4);0;0;0;ref_sym(1);ref_sym(2);ref_sym(3)];
 
-% ---- multiple shooting --------
-for k=1:N-1 % loop over control intervals
-    opti.subject_to(X_sym(:,k+1) == f_discrete(X_sym(:,k), U_sym(:,k)));
-end
 
+alpha = X_sym(4,:);
+beta = X_sym(5,:);
 
+delta1 = U_sym(1,:);
+delta2 = U_sym(2,:);
+Pavg = U_sym(3,:);
+Pdiff = U_sym(4,:);
 % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
             
-R = 0.5*eye(nu);
-Q = 10*eye(nx);
+R = eye(nu);
+Q = eye(nx);
 
 % ---- objective ---------
 obj = 0;
+opti.subject_to(X_sym(:,1)==x0_sym);
 
 for k=1:N-1 % loop over control intervals
-    obj = obj + X_sym(:,k)'*Q*X_sym(:,k) + U_sym(:,k)'*R*U_sym(:,k); 
+    opti.subject_to(X_sym(:,k+1) == f_discrete(X_sym(:,k), U_sym(:,k)));
+    obj = obj + (X_sym(:,k)-Xs)'*Q*(X_sym(:,k)-Xs) + U_sym(:,k)'*R*U_sym(:,k); 
 end
+
+opti.subject_to(-0.087 <= alpha <= 0.087); % alpha 
+opti.subject_to(-0.087 <=beta <= .087); % beta
+
+display(U_sym);
+
+opti.subject_to( -0.26 <= delta1 <= 0.26);
+opti.subject_to(-0.26 <= delta2 <= 0.26);
+
+opti.subject_to(-6.66 <= Pavg <= 23.3);
+opti.subject_to(-20 <= Pdiff <= 20);
 
 opti.minimize(obj);
 
