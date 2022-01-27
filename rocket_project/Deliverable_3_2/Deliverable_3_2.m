@@ -7,6 +7,8 @@ rocket = Rocket(Ts);
 [xs, us] = rocket.trim() % Compute steady−state for which 0 = f(xs,us)
 sys = rocket.linearize(xs, us) % Linearize the nonlinear model about trim point
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys, xs, us)
+%in order to use the same code as 5.1:
+rocket.mass = 0;
 
 %% Design MPC controller
 H = 3; % Horizon length in seconds

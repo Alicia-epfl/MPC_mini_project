@@ -1,7 +1,6 @@
 addpath(fullfile('..', 'src'));
 
 %% TODO: This file should produce all the plots for the deliverable
-%% TODO: This file should produce all the plots for the deliverable
 
 Ts = 1/20;
 rocket = Rocket(Ts);
