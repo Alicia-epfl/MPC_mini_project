@@ -11,7 +11,6 @@ classdef MPC_Control_z < MPC_Control
             [mpc.A_bar, mpc.B_bar, mpc.C_bar, mpc.L] = mpc.setup_estimator();
         end
         
-        %% TO UPDATE FOR 5.1
         % Design a YALMIP optimizer object that takes a steady-state state
         % and input (xs, us) and returns a control input
         function ctrl_opti = setup_controller(mpc, Ts, H)
@@ -43,9 +42,9 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 0.1*eye(nu);
+            R = 1*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2) = 20;
+            Q(2,2) = 100;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
@@ -80,17 +79,8 @@ classdef MPC_Control_z < MPC_Control
                 con = con + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
-
-            Test_offset_free = true;
-            %if there's no mass modulation, then take the constraints into
-            %account for 4.1
-            if ~Test_offset_free
-                disp('3.1 or 4.1');
-                con = con + (Ff*(X(:,N)-x_ref) <= ff);
-                obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
-            else
-                disp('5.1');
-            end
+            con = con + (Ff*(X(:,N)-x_ref) <= ff);
+            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,7 +90,7 @@ classdef MPC_Control_z < MPC_Control
                 {X(:,1), x_ref, u_ref, d_est}, U(:,1));
         end
         
-        %% TO UPDATE FOR 5.1
+        
         % Design a YALMIP optimizer object that takes a position reference
         % and returns a feasible steady-state state and input (xs, us)
         function target_opti = setup_steady_state_target(mpc)
@@ -153,14 +143,11 @@ classdef MPC_Control_z < MPC_Control
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
             
-             Cd=0;
-            [nx, nu] = size(mpc.B);%nx = 2, nu = 1
-
-            A_bar = [mpc.A, mpc.B;         
-                    zeros(1,nx),1];
-            B_bar = [mpc.B;zeros(1,nu)];
-            C_bar = [mpc.C,Cd];
-            L = -place(A_bar',C_bar',[0.7, 0.6, 0.5])';
+            A_bar = [];
+            B_bar = [];
+            C_bar = [];
+            L = [];
+            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         end

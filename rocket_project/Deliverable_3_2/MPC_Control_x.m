@@ -28,12 +28,10 @@ classdef MPC_Control_x < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 0.1*eye(nu);
+            R = 20*eye(nu);
             Q = 1*eye(nx);
-            Q(1,1)=200;%omegay
-            Q(2,2)= 3000;%beta
-            Q(3,3) = 20; %speedx
-            Q(4,4)= 30; %x
+            Q(2,2)= 10;
+            Q(4,4)= 0.5;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
