@@ -35,7 +35,8 @@ classdef MPC_Control_roll < MPC_Control
             
             R = 0.1*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2) = 20;
+            Q(1,1) = 1; %omega_z
+            Q(2,2) = 50;%gamma
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
