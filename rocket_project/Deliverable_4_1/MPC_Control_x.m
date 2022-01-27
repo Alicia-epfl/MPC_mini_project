@@ -33,7 +33,7 @@ classdef MPC_Control_x < MPC_Control
             Q = 1*eye(nx);
             Q(1,1)= 100;
             Q(3,3)= 1;
-            Q(4,4)= 30;
+            Q(4,4)= 50;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
