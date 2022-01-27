@@ -1,7 +1,6 @@
 addpath(fullfile('..', 'src'));
 
 %% TODO: This file should produce all the plots for the deliverable
-%% TODO: This file should produce all the plots for the deliverable
 
 Ts = 1/20;
 rocket = Rocket(Ts);
@@ -16,7 +15,7 @@ mpc_y = MPC_Control_y(sys_y, Ts, H);
 mpc_z = MPC_Control_z(sys_z, Ts, H);
 mpc_roll = MPC_Control_roll(sys_roll, Ts, H);
 
-%%Simulation
+%% Path tracking
 % Merge four sub−system controllers into one full−system controller
 mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
 % Setup reference function
