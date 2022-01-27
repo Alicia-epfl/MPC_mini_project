@@ -28,10 +28,12 @@ classdef MPC_Control_y < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 20*eye(nu);
+            R = 0.1*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2)= 10;
-            Q(4,4)= 0.5;
+            Q(1,1)=200;%omegax
+            Q(2,2)= 3000;%alpha
+            Q(3,3) = 20; %speedy
+            Q(4,4)= 80; %y
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;

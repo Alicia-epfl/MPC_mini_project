@@ -44,7 +44,8 @@ classdef MPC_Control_z < MPC_Control
             
             R = 0.1*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2) = 20;
+            Q(1,1) = Q(1,1);%speedz
+            Q(2,2) = 20;%z
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
