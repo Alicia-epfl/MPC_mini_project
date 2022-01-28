@@ -35,9 +35,7 @@ classdef MPC_Control_x < MPC_Control
             Q(3,3)= 1;
             Q(4,4)= 50;
             
-            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
-            K=-K;
-            Acl= mpc.A+mpc.B*K;
+            [~,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             
             % Constraints
             M = [1;-1]; m = [deg2rad(15); deg2rad(15)];
@@ -47,20 +45,7 @@ classdef MPC_Control_x < MPC_Control
             e = sdpvar(2,N);
             S = 20*eye(2);
             s = 1000;
-            
-            % Terminal set
-            Xf = polytope([F;M*K],[f;m]);
-            
-            while 1
-                prevXf = Xf;
-                [T,t] = double(Xf);
-                preXf = polytope(T*Acl,t);
-                Xf = intersect(Xf,preXf);
-                if isequal(prevXf, Xf)
-                    break
-                end
-            end
-            [Ff,ff]=double(Xf);
+
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
@@ -78,7 +63,6 @@ classdef MPC_Control_x < MPC_Control
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
                 obj = obj + e(:,i)'*S*e(:,i)+s*norm(e(:,i),inf);
             end
-            con = con + (Ff*(X(:,N)-x_ref) <= ff);
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             obj = obj + e(:,N)'*S*e(:,N)+s*norm(e(:,N),inf);
             
