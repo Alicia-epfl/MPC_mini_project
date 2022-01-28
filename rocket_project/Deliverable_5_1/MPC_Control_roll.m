@@ -37,10 +37,26 @@ classdef MPC_Control_roll < MPC_Control
             Q = 1*eye(nx);
             Q(2,2) = 80;
             
-            [~,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
+            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
+            K=-K;
+            Acl= mpc.A+mpc.B*K;
             
             % Constraints
             M = [1;-1]; m = [20; 20];
+
+            % Terminal set
+            Xf = polytope(M*K,m);
+            
+            while 1
+                prevXf = Xf;
+                [F,f] = double(Xf);
+                preXf = polytope(F*Acl,f);
+                Xf = intersect(Xf,preXf);
+                if isequal(prevXf,Xf)
+                    break
+                end
+            end
+            [Ff,ff]=double(Xf);
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
@@ -56,7 +72,7 @@ classdef MPC_Control_roll < MPC_Control
                 con = con + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
-            
+            con = con + (Ff*(X(:,N)-x_ref) <= ff);
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
