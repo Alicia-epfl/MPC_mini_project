@@ -24,8 +24,8 @@ ref = @(t_, x_) rocket.MPC_ref(t_, Tf);
 x0 = zeros(12,1);
 
 %Test_offset = true; %Indicate if we are testing 5.1 or not
-Test_offset = false; 
-rocket.mass = 2;%1.783; % Manipulate mass for simulation
+Test_offset = true; 
+rocket.mass = 1.783; % Manipulate mass for simulation
 
 if Test_offset
     %In order to test our modification with the mass: the controller
@@ -33,6 +33,7 @@ if Test_offset
     %z states from the corresponding columns of the Z hat output. The last row is the disturbance
     %estimate d.
     [T, X, U, Ref, Z_hat] = rocket.simulate_f_est_z(x0, Tf, mpc, ref, mpc_z, sys_z);
+    Zhatsize = size(Z_hat)
     
     % Plot pose
     rocket.anim_rate = 10; % Increase this to make the animation faster

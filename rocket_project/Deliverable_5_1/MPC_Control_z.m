@@ -73,15 +73,17 @@ classdef MPC_Control_z < MPC_Control
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE                
             
-            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + B*d_est) + (M*U(:,1) <= m);
+            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + mpc.B*d_est) + (M*U(:,1) <= m);
             obj = (X(:,1)-x_ref)'*Q*(X(:,1)-x_ref) + (U(:,1)-u_ref)'*R*(U(:,1)-u_ref);
             for i = 2:N-1
-                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i) + B*d_est);
+                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i) + mpc.B*d_est);
                 con = con + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
-                con = con + (Ff*(X(:,N)-x_ref) <= ff);
-                obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
+
+                disp('5.1');
+                %con = con + (X(:,N) == mpc.A*X(:,N-1) + mpc.B*u(N-1));
+                obj = obj+ (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref); 
 
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -120,11 +122,21 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            Rs = 1;
+%             Rs = 1;
+% 
+%             con = [mpc.A*xs + mpc.B*us + mpc.B*d_est == xs; mpc.C*xs == ref; -6.6667 <= us) <= 23.3333];
+%             obj = us*Rs*us;
 
-            con = [mpc.A*xs + mpc.B*us == xs; mpc.C*xs == ref;
-                         -6.6667 <= us <= 23.3333];
-            obj = us*Rs*us;
+
+                  %Ecriture Antoine
+                  nx = size(mpc.A,1);
+                  ny = size(mpc.C,1);
+
+                  M=[1;-1];
+                  m=[23;6];
+                  obj=us^2;
+                  con=(M*us <= m) + ([eye(nx,size(mpc.A,2))-mpc.A, mpc.B; mpc.C, zeros(nx,ny)]*[xs;us] == [mpc.B*d_est;ref]);
+
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,12 +157,16 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
+           
+            [nx, nu] = size(mpc.B);%nx = 2, nu = 1
+            [ny, ~] = size(mpc.C);
+            Cd=zeros(ny,1);
 
-
-            A_bar = [];
-            B_bar = [];
-            C_bar = [];
-            L = [];
+            A_bar = [mpc.A, mpc.B;         
+                    zeros(1,nx),1];
+            B_bar = [mpc.B;zeros(1,nu)];
+            C_bar = [mpc.C,Cd];
+            L = -place(A_bar',C_bar',[0.7, 0.6, 0.5])';
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
