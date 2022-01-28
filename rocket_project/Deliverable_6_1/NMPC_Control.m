@@ -19,9 +19,9 @@ ref_sym = opti.parameter(4, 1);   % target position
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
 % Runge-Kutta 4 integration
-f_discrete = @(x,u) RK4(x,u,H,rocket);
+f_discrete = @(x,u) RK4(x,u,rocket.Ts,rocket);
 Xs = [0;0;0;0;0;ref_sym(4);0;0;0;ref_sym(1);ref_sym(2);ref_sym(3)];
-%display(Xs);
+display(rocket.Ts);
 
 alpha = X_sym(4,:);
 beta = X_sym(5,:);
@@ -31,29 +31,31 @@ delta2 = U_sym(2,:);
 Pavg = U_sym(3,:);
 Pdiff = U_sym(4,:);
 % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            
+% H = 0.7 30 30 1 1 1 150 40 40 100 500 500 650
+% H = 1 1 1 1 1 1 150 20 20 40 90 90 200
+% H = 50 50 50 1 1 150 20 20 50 150 150 250
 R = eye(nu);
 Q = eye(nx);
-Q(1,1) = 1; %wx         1
-Q(2,2) = 1; %wy         1
-Q(3,3) = 1; %wz         1
-Q(4,4) = 1;  %alpha
-Q(5,5) = 1;  %beta
-Q(6,6) = 60; %gamma
-Q(7,7) = 30;     % vx; 20
-Q(8,8) = 30;     % vy; 20
-Q(9,9) = 1;     % vz;
-Q(10,10) = 100; %     100
-Q(11,11) = 100;  %    100
-Q(12,12) = 60; %       60
+Q(1,1) = 50; %wx          
+Q(2,2) = 50; %wy         
+Q(3,3) = 50; %wz         
+Q(4,4) = 1;  %alpha     
+Q(5,5) = 1;  %beta      
+Q(6,6) = 150; %gamma  
+Q(7,7) = 20;     % vx;
+Q(8,8) = 20;    % vy; 
+Q(9,9) = 50;     % vz;
+Q(10,10) = 150; %     x
+Q(11,11) = 150;  %    y
+Q(12,12) = 300; %     z
 %display(Q)
 
 % ---- objective ---------
 obj = 0;
 opti.subject_to(X_sym(:,1)==x0_sym);
-[xs, Us] = rocket.trim();
+[xs, Us] = rocket.trim(); % we don t use litte xs
 
-display('RK4')
+
 for k=1:N-1 % loop over control intervals
     opti.subject_to(X_sym(:,k+1) == f_discrete(X_sym(:,k), U_sym(:,k)));
     obj = obj + (X_sym(:,k)-Xs)'*Q*(X_sym(:,k)-Xs) + (U_sym(:,k)-Us)'*R*(U_sym(:,k)-Us); 
