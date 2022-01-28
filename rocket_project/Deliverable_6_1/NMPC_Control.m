@@ -32,20 +32,20 @@ Pavg = U_sym(3,:);
 Pdiff = U_sym(4,:);
 % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
             
-R = 3*eye(nu);
+R = eye(nu);
 Q = eye(nx);
-Q(1,1) = 50; %wx
-Q(2,2) = 50; %wy
-Q(3,3) = 1;
+Q(1,1) = 1; %wx         1
+Q(2,2) = 1; %wy         1
+Q(3,3) = 1; %wz         1
 Q(4,4) = 1;  %alpha
 Q(5,5) = 1;  %beta
-Q(6,6) = 1000; %gamma
-Q(7,7) = 1;     % vx;
-Q(8,8) = 1;     % vy;
+Q(6,6) = 60; %gamma
+Q(7,7) = 30;     % vx; 20
+Q(8,8) = 30;     % vy; 20
 Q(9,9) = 1;     % vz;
-Q(10,10) = 1500;
-Q(11,11) = 1500;
-Q(12,12) = 2500;
+Q(10,10) = 100; %     100
+Q(11,11) = 100;  %    100
+Q(12,12) = 60; %       60
 %display(Q)
 
 % ---- objective ---------
