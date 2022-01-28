@@ -11,7 +11,6 @@ classdef MPC_Control_z < MPC_Control
             [mpc.A_bar, mpc.B_bar, mpc.C_bar, mpc.L] = mpc.setup_estimator();
         end
         
-        %% TO UPDATE FOR 5.1
         % Design a YALMIP optimizer object that takes a steady-state state
         % and input (xs, us) and returns a control input
         function ctrl_opti = setup_controller(mpc, Ts, H)
@@ -43,9 +42,9 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            R = 0.1*eye(nu);
+            R = 1*eye(nu);
             Q = 1*eye(nx);
-            Q(2,2) = 20;
+            Q(2,2) = 100;
             
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K=-K;
@@ -66,12 +65,12 @@ classdef MPC_Control_z < MPC_Control
                     break
                 end
             end
-            [Ff,ff]=double(Xf);
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system
             
-            % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE                
+            % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
+            %Using x+ = A*x + B*u + B*d_est
             
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + mpc.B*d_est) + (M*U(:,1) <= m);
             obj = (X(:,1)-x_ref)'*Q*(X(:,1)-x_ref) + (U(:,1)-u_ref)'*R*(U(:,1)-u_ref);
@@ -81,11 +80,8 @@ classdef MPC_Control_z < MPC_Control
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
 
-                disp('5.1');
-                %con = con + (X(:,N) == mpc.A*X(:,N-1) + mpc.B*u(N-1));
                 obj = obj+ (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref); 
 
-            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
@@ -93,8 +89,7 @@ classdef MPC_Control_z < MPC_Control
             ctrl_opti = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
                 {X(:,1), x_ref, u_ref, d_est}, U(:,1));
         end
-        
-        %% TO UPDATE FOR 5.1
+
         % Design a YALMIP optimizer object that takes a position reference
         % and returns a feasible steady-state state and input (xs, us)
         function target_opti = setup_steady_state_target(mpc)
@@ -149,18 +144,17 @@ classdef MPC_Control_z < MPC_Control
            
             [nx, nu] = size(mpc.B);%nx = 2, nu = 1
             [ny, ~] = size(mpc.C);
+            
             Cd=zeros(ny,1);
 
             A_bar = [mpc.A, mpc.B;         
                     zeros(1,nx),1];
             B_bar = [mpc.B;zeros(1,nu)];
             C_bar = [mpc.C,Cd];
-            L = -place(A_bar',C_bar',[0.7, 0.6, 0.5])';
+            L = -place(A_bar',C_bar',[0.1, 0.3, 0.2])';
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         end
-        
-        
     end
 end

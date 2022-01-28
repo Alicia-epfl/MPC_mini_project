@@ -1,6 +1,8 @@
 addpath(fullfile('..', 'src'));
 
 %% TODO: This file should produce all the plots for the deliverable
+Test_offset = false; %Indicate if we are testing the offset or the estimator
+
 Ts = 1/20;
 rocket = Rocket(Ts);
 [xs, us] = rocket.trim();
@@ -23,17 +25,12 @@ Tf = 30;
 ref = @(t_, x_) rocket.MPC_ref(t_, Tf);
 x0 = zeros(12,1);
 
-%Test_offset = true; %Indicate if we are testing 5.1 or not
-Test_offset = true; 
+
 rocket.mass = 1.783; % Manipulate mass for simulation
 
-if Test_offset
-    %In order to test our modification with the mass: the controller
-    %will now act based on the state estimates from the observer. You can obtain the estimates of the
-    %z states from the corresponding columns of the Z hat output. The last row is the disturbance
-    %estimate d.
+if ~Test_offset
     [T, X, U, Ref, Z_hat] = rocket.simulate_f_est_z(x0, Tf, mpc, ref, mpc_z, sys_z);
-    Zhatsize = size(Z_hat)
+    Zhatsize = size(Z_hat);
     
     % Plot pose
     rocket.anim_rate = 10; % Increase this to make the animation faster
@@ -45,7 +42,7 @@ else
     % Plot pose
     rocket.anim_rate = 10; % Increase this to make the animation faster
     ph = rocket.plotvis(T, X, U, Ref);
-    ph.fig.Name = 'Merged lin. MPC in nonlinear simulation'; % Set a figure title
+    ph.fig.Name = 'Merged lin. MPC in nonlinear simulation with offset'; % Set a figure title
 end
 
 
