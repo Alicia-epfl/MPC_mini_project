@@ -46,25 +46,11 @@ classdef MPC_Control_z < MPC_Control
             Q = 1*eye(nx);
             Q(2,2) = 100;
             
-            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
-            K=-K;
-            Acl= mpc.A+mpc.B*K;
+            [~,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             
             % Constraints
             M = [1;-1]; m = [23.3333; 6.6667];
             
-            % Terminal set
-            Xf = polytope(M*K,m);
-            
-            while 1
-                prevXf = Xf;
-                [F,f] = double(Xf);
-                preXf = polytope(F*Acl,f);
-                Xf = intersect(Xf,preXf);
-                if isequal(prevXf,Xf)
-                    break
-                end
-            end
 
             % NOTE: The matrices mpc.A, mpc.B, mpc.C and mpc.D are
             %       the DISCRETE-TIME MODEL of your system

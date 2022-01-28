@@ -11,7 +11,7 @@ sys = rocket.linearize(xs, us);
 
 
 %% Design MPC controller
-H = 3; % Horizon length in seconds %do we need it?
+H = 3; % Horizon length in seconds
 mpc_x = MPC_Control_x(sys_x, Ts, H);
 mpc_y = MPC_Control_y(sys_y, Ts, H);
 mpc_z = MPC_Control_z(sys_z, Ts, H);

@@ -11,7 +11,6 @@ classdef MPC_Control_z < MPC_Control
             [mpc.A_bar, mpc.B_bar, mpc.C_bar, mpc.L] = mpc.setup_estimator();
         end
         
-        %% TO UPDATE FOR 5.1
         % Design a YALMIP optimizer object that takes a steady-state state
         % and input (xs, us) and returns a control input
         function ctrl_opti = setup_controller(mpc, Ts, H)
@@ -73,16 +72,15 @@ classdef MPC_Control_z < MPC_Control
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE                
             
-            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + B*d_est) + (M*U(:,1) <= m);
+            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (M*U(:,1) <= m);
             obj = (X(:,1)-x_ref)'*Q*(X(:,1)-x_ref) + (U(:,1)-u_ref)'*R*(U(:,1)-u_ref);
             for i = 2:N-1
-                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i) + B*d_est);
+                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (M*U(:,i) <= m);
                 obj = obj + (X(:,i)-x_ref)'*Q*(X(:,i)-x_ref) + (U(:,i)-u_ref)'*R*(U(:,i)-u_ref);
             end
-                con = con + (Ff*(X(:,N)-x_ref) <= ff);
-                obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
-
+            con = con + (Ff*(X(:,N)-x_ref) <= ff);
+            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,7 +90,7 @@ classdef MPC_Control_z < MPC_Control
                 {X(:,1), x_ref, u_ref, d_est}, U(:,1));
         end
         
-        %% TO UPDATE FOR 5.1
+        
         % Design a YALMIP optimizer object that takes a position reference
         % and returns a feasible steady-state state and input (xs, us)
         function target_opti = setup_steady_state_target(mpc)
@@ -121,11 +119,10 @@ classdef MPC_Control_z < MPC_Control
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
             Rs = 1;
-
             con = [mpc.A*xs + mpc.B*us == xs; mpc.C*xs == ref;
-                         -6.6667 <= us <= 23.3333];
+                     -6.6667 <= us <= 23.3333];
             obj = us*Rs*us;
-
+            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
@@ -145,13 +142,12 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-
-
+            
             A_bar = [];
             B_bar = [];
             C_bar = [];
             L = [];
-
+            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         end
