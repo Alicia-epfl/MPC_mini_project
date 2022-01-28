@@ -122,21 +122,10 @@ classdef MPC_Control_z < MPC_Control
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-%             Rs = 1;
-% 
-%             con = [mpc.A*xs + mpc.B*us + mpc.B*d_est == xs; mpc.C*xs == ref; -6.6667 <= us) <= 23.3333];
-%             obj = us*Rs*us;
+            Rs = 1;
 
-
-                  %Ecriture Antoine
-                  nx = size(mpc.A,1);
-                  ny = size(mpc.C,1);
-
-                  M=[1;-1];
-                  m=[23;6];
-                  obj=us^2;
-                  con=(M*us <= m) + ([eye(nx,size(mpc.A,2))-mpc.A, mpc.B; mpc.C, zeros(nx,ny)]*[xs;us] == [mpc.B*d_est;ref]);
-
+            con = [mpc.A*xs + mpc.B*us + mpc.B*d_est == xs; mpc.C*xs == ref; -6.6667 <= us <= 23.3333];
+            obj = us*Rs*us;
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
